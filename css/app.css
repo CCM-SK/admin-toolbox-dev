@@ -1839,12 +1839,33 @@ body.sidebar-detached .tool-drag-grip {
   border-bottom: 1px solid var(--line);
   margin-bottom: 9px;
 }
-.tool-shortcuts h3 {
+.tool-shortcuts > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   margin: 0 8px 6px;
   color: var(--muted);
   font-size: 10px;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .09em;
+  cursor: pointer;
+  list-style: none;
+}
+.tool-shortcuts > summary::-webkit-details-marker {
+  display: none;
+}
+.tool-shortcuts > summary::after {
+  content: "⌄";
+  font-size: 12px;
+  transition: transform .15s ease;
+}
+.tool-shortcuts:not([open]) > summary::after {
+  transform: rotate(-90deg);
+}
+.tool-shortcuts > summary:hover {
+  color: var(--text);
 }
 .tool-group {
   margin-bottom: 5px;

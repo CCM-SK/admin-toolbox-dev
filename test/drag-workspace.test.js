@@ -28,3 +28,14 @@ test('workspace is the single entry point for workflow management', async () => 
   assert.doesNotMatch(app, /querySelector\('#openWorkflow'\)/);
   assert.match(html, /id="addToWorkflow"/);
 });
+
+
+test('Recently used is a native collapsible section and is collapsed by default', async () => {
+  const html = await read('index.html');
+  const css = await read('css/app.css');
+  assert.match(html, /<details class="tool-shortcuts" id="toolRecentSection" hidden>\s*<summary>Recently used<\/summary>/);
+  assert.doesNotMatch(html.match(/<details class="tool-shortcuts" id="toolRecentSection"[\s\S]*?<\/details>/)?.[0] || '', /\sopen(?:\s|>)/);
+  assert.match(html, /<div id="toolRecent"><\/div>/);
+  assert.match(css, /\.tool-shortcuts > summary::after/);
+  assert.match(css, /\.tool-shortcuts:not\(\[open\]\) > summary::after/);
+});
