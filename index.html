@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en" data-theme="classic">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; script-src 'self'; style-src 'self'; style-src-elem 'self'; style-src-attr 'none'; img-src 'self' data:; connect-src 'none'; worker-src 'self';">
+  <meta name="description" content="Local-only (administrative) IT toolbox. Files are processed in your browser and are not uploaded.">
+  <title>Toolbox - Local-only IT utilities</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">🛠</div>
+      <div>
+        <h1>Toolbox <span class="small">v0.1.7.6-beta</span></h1>
+        <p>Local-only IT utilities. No uploads. No APIs. No usage analytics.</p>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <div class="privacy-badge" id="privacyBadge" title="Application data stays in the browser">LOCAL ONLY</div>
+      <button class="icon-button" id="workspaceToggle" type="button" title="Open workspace and workflow">
+        <span aria-hidden="true">▣</span>
+        <span class="button-label">Workspace</span>
+        <span id="workflowCount" class="workflow-count">0</span>
+      </button>
+      <button class="icon-button" id="themeToggle" type="button" aria-pressed="false" title="Switch visual theme">
+        <span aria-hidden="true">◐</span>
+        <span class="button-label">Theme</span>
+      </button>
+      <button class="icon-button" id="sidebarDetach" type="button" aria-pressed="false" title="Detach and move the sidebar">
+        <span aria-hidden="true">↗</span>
+        <span class="button-label">Detach sidebar</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="layout" id="layout">
+    <nav class="sidebar" id="sidebar" aria-label="Tools">
+      <div class="sidebar-head" id="sidebarDragHandle">
+        <div>
+          <div class="sidebar-kicker">TOOLS</div>
+          <strong>Workspace</strong>
+        </div>
+        <button class="drag-handle" id="dragHandle" type="button" title="Drag when sidebar is detached" aria-label="Drag sidebar">⠿</button>
+      </div>
+
+      <div class="sidebar-scroll">
+        <div class="tool-search-wrap">
+          <label for="toolSearch">Find a tool <span class="small">Ctrl+K</span></label>
+          <input id="toolSearch" type="search" placeholder="Search name, category or keyword…" autocomplete="off">
+          <div id="toolSearchResults" class="tool-search-results" hidden></div>
+        </div>
+        <section class="tool-shortcuts" id="toolFavoritesSection" hidden>
+          <h3>Favorites</h3>
+          <div id="toolFavorites"></div>
+        </section>
+        <section class="tool-shortcuts" id="toolRecentSection" hidden>
+          <h3>Recently used</h3>
+          <div id="toolRecent"></div>
+        </section>
+        <div id="toolNavigation"></div>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="nav-item" data-tool="audit"><span class="nav-icon">✓</span><span>Audit/architecture</span></button>
+      </div>
+    </nav>
+
+    <section class="workspace-main">
+      <div class="tool-actionbar" id="toolActionBar" hidden>
+        <div class="tool-actionbar-heading">
+          <strong id="activeToolName"></strong>
+          <span id="activeToolCategory" class="small"></span>
+          <span id="toolActionMessage" class="small" role="status" aria-live="polite"></span>
+        </div>
+        <div class="actions tool-action-buttons">
+          <button class="btn" id="loadToolExample" type="button" hidden>Load example</button>
+          <button class="btn" id="addToWorkflow" type="button" hidden>Add input to workflow</button>
+          <button class="btn" id="openWorkflow" type="button">Workflow</button>
+        </div>
+      </div>
+      <section class="content" id="app" aria-live="polite"></section>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Static HTML/CSS/JS</span>
+    <span>•</span>
+    <span>Browser processing only</span>
+  </footer>
+
+  <dialog class="workspace-dialog" id="workspaceDialog" aria-labelledby="workspaceTitle">
+    <div class="workspace-dialog-header">
+      <div><h2 id="workspaceTitle">Workspace</h2><p class="small">Session-only favorites, recent tools and workflow artifacts.</p></div>
+      <button class="icon-button" id="closeWorkspace" type="button" aria-label="Close workspace">✕</button>
+    </div>
+    <section class="workspace-actions">
+      <button class="btn primary" id="exportWorkspace" type="button">Export workspace</button>
+      <button class="btn" id="importWorkspace" type="button">Import workspace</button>
+      <input id="workspaceFile" type="file" accept="application/json,.json" hidden>
+      <span id="workspaceStatus" class="small" role="status" aria-live="polite"></span>
+    </section>
+    <p class="notice warning">Workspace files include the text you added to the workflow. They may contain confidential logs, tokens or configuration. Store exported files securely.</p>
+    <section><h3>Workflow artifacts</h3><div id="workflowItems" class="workflow-items"></div></section>
+    <div class="workspace-dialog-footer">
+      <button class="btn secondary" id="clearWorkflow" type="button">Clear workflow</button>
+      <span class="small">Items are held in memory until this tab is closed.</span>
+    </div>
+  </dialog>
+
+  <script type="module" src="js/shell.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

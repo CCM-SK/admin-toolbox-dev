@@ -1,0 +1,304 @@
+{
+  "application": "Admin Toolbox",
+  "version": "0.1.7.6-beta",
+  "architecture": "GitHub Pages -> static HTML/CSS/ES modules -> browser -> local processing -> result/download",
+  "loading": {
+    "toolModules": "on-demand same-origin dynamic imports",
+    "buildStepRequired": false
+  },
+  "network": {
+    "connectSrc": "'none'",
+    "externalRequests": false,
+    "thirdPartyRuntimeRequests": false
+  },
+  "storage": {
+    "localStorage": false,
+    "sessionStorage": false,
+    "indexedDB": false,
+    "applicationCookies": false,
+    "sessionMemory": [
+      "favorites",
+      "recent tools",
+      "workflow artifacts"
+    ]
+  },
+  "workers": [
+    {
+      "id": "log-worker",
+      "purpose": "streaming search and filtering for large log files",
+      "source": "js/workers/log-worker.js"
+    }
+  ],
+  "dependencies": {
+    "thirdPartyRuntime": false,
+    "cdn": false
+  },
+  "fileInput": {
+    "userSelection": true,
+    "dragAndDrop": true
+  },
+  "exports": {
+    "userInitiatedOnly": true,
+    "workspaceIncludesWorkflowText": true
+  },
+  "tools": [
+    {
+      "id": "logs",
+      "name": "Log / CSV inspector",
+      "category": "Diagnostics",
+      "description": "Search, filter and export CSV or plain-text logs"
+    },
+    {
+      "id": "eventviewer",
+      "name": "Event Viewer analyzer",
+      "category": "Diagnostics",
+      "description": "Inspect exported Windows event data"
+    },
+    {
+      "id": "diff",
+      "name": "Configuration diff",
+      "category": "Diagnostics",
+      "description": "Compare two configuration texts or files"
+    },
+    {
+      "id": "hash",
+      "name": "File hashing",
+      "category": "Diagnostics",
+      "description": "Calculate file hashes locally"
+    },
+    {
+      "id": "archivem",
+      "name": "Archive manifest viewer",
+      "category": "Diagnostics",
+      "description": "Inspect archive metadata without extracting files"
+    },
+    {
+      "id": "jsonviewer",
+      "name": "JSON Viewer",
+      "category": "Diagnostics",
+      "description": "Inspect and format JSON data"
+    },
+    {
+      "id": "timeline",
+      "name": "Structured log timeline",
+      "category": "Diagnostics",
+      "description": "Merge supported logs into a normalized timeline"
+    },
+    {
+      "id": "passwords",
+      "name": "Password generator",
+      "category": "Security & identity",
+      "description": "Generate random passwords and passphrases"
+    },
+    {
+      "id": "sshare",
+      "name": "Secure Share Password",
+      "category": "Security & identity",
+      "description": "Encrypt secrets locally for out-of-band sharing"
+    },
+    {
+      "id": "identityMeta",
+      "name": "SID/GUID Meta Decoder",
+      "category": "Security & identity",
+      "description": "Decode common SID, GUID and identity metadata"
+    },
+    {
+      "id": "identity",
+      "name": "SID/GUID Decoder",
+      "category": "Security & identity",
+      "description": "Parse Windows SIDs and GUID representations"
+    },
+    {
+      "id": "certs",
+      "name": "Certificate / CSR inspector",
+      "category": "Security & identity",
+      "description": "Inspect PEM and DER ASN.1 certificate or CSR content"
+    },
+    {
+      "id": "sdetector",
+      "name": "Secrets Detector",
+      "category": "Security & identity",
+      "description": "Find likely secrets and redact findings locally"
+    },
+    {
+      "id": "jwt",
+      "name": "JWT/JWS/JWK Decoder",
+      "category": "Security & identity",
+      "description": "Decode JWT/JWS headers, claims and JWK metadata (no signature verification)"
+    },
+    {
+      "id": "headerrework",
+      "name": "Mail-header analyzer",
+      "category": "Network & firewall",
+      "description": "Analyze message headers and delivery hops"
+    },
+    {
+      "id": "urlanalyzer",
+      "name": "URL Analyzer",
+      "category": "Network & firewall",
+      "description": "Inspect URL components, parameters and indicators"
+    },
+    {
+      "id": "subnet",
+      "name": "IP/subnet calculator",
+      "category": "Network & firewall",
+      "description": "Calculate IPv4 and IPv6 network details"
+    },
+    {
+      "id": "range",
+      "name": "IP Range Analyzer",
+      "category": "Network & firewall",
+      "description": "Analyze address ranges and overlaps"
+    },
+    {
+      "id": "vlanplanner",
+      "name": "VLAN planner",
+      "category": "Network & firewall",
+      "description": "Plan VLANs and subnets"
+    },
+    {
+      "id": "route",
+      "name": "Route Calculator/Simulator",
+      "category": "Network & firewall",
+      "description": "Analyze routing and network paths"
+    },
+    {
+      "id": "ciscofirewall",
+      "name": "Cisco ASA/ACL Analyzer",
+      "category": "Network & firewall",
+      "description": "Parse Cisco ASA and ACL rules"
+    },
+    {
+      "id": "paloalto",
+      "name": "Palo Alto Analyzer",
+      "category": "Network & firewall",
+      "description": "Inspect Palo Alto configuration exports"
+    },
+    {
+      "id": "citrixadc",
+      "name": "Citrix ADC Analyzer",
+      "category": "Network & firewall",
+      "description": "Parse Citrix ADC ns.conf configuration"
+    },
+    {
+      "id": "cookies",
+      "name": "Cookie Analyzer",
+      "category": "Network & firewall",
+      "description": "Inspect cookie attributes and security flags"
+    },
+    {
+      "id": "regex",
+      "name": "Regex Workbench",
+      "category": "Developer & data",
+      "description": "Test JavaScript regular expressions and replacements"
+    },
+    {
+      "id": "encoding",
+      "name": "Encoding/decoding",
+      "category": "Developer & data",
+      "description": "Encode and decode common text formats"
+    },
+    {
+      "id": "dataWorkbench",
+      "name": "Data Workbench",
+      "category": "Developer & data",
+      "description": "Convert, inspect and transform JSON, YAML and XML"
+    },
+    {
+      "id": "dlls",
+      "name": "DLL Analyzer",
+      "category": "Developer & data",
+      "description": "Inspect Windows DLL metadata and dependencies"
+    },
+    {
+      "id": "timestamp",
+      "name": "Timestamp converter",
+      "category": "Developer & data",
+      "description": "Convert timestamps and time zones"
+    },
+    {
+      "id": "chmod",
+      "name": "CHMOD Calculator/Parser",
+      "category": "Developer & data",
+      "description": "Convert Unix file permission representations"
+    },
+    {
+      "id": "powershell",
+      "name": "PowerShell Analyzer",
+      "category": "Developer & data",
+      "description": "Review PowerShell scripts for common issues"
+    },
+    {
+      "id": "saplandscape",
+      "name": "SAP Landscape Analyzer",
+      "category": "Developer & data",
+      "description": "Inspect SAP landscape exports and configuration"
+    },
+    {
+      "id": "docker",
+      "name": "Docker/Kubernetes Analyzer",
+      "category": "Developer & data",
+      "description": "Review Compose and Kubernetes manifests"
+    },
+    {
+      "id": "gpresult",
+      "name": "Group Policy Results",
+      "category": "Windows & hardware",
+      "description": "Inspect gpresult reports and policy settings"
+    },
+    {
+      "id": "drivers",
+      "name": "Driver Assistant",
+      "category": "Windows & hardware",
+      "description": "Inspect driver inventory exports"
+    },
+    {
+      "id": "bios",
+      "name": "BIOS Interpreter",
+      "category": "Windows & hardware",
+      "description": "Interpret BIOS and hardware inventory data"
+    },
+    {
+      "id": "dism",
+      "name": "DISM/Windows Image Inspector",
+      "category": "Windows & hardware",
+      "description": "Inspect DISM and Windows image output"
+    },
+    {
+      "id": "sddl",
+      "name": "SDDL/ACL Inspector",
+      "category": "Windows & hardware",
+      "description": "Inspect security descriptor strings"
+    },
+    {
+      "id": "cron_const",
+      "name": "Cron Expression Builder",
+      "category": "Automation",
+      "description": "Build and explain cron expressions"
+    },
+    {
+      "id": "audit",
+      "name": "Audit / architecture",
+      "category": "Administration",
+      "description": "Review security posture, tool inventory and deployment model"
+    }
+  ],
+  "features": [
+    "global tool search",
+    "session favorites and recents",
+    "sample inputs",
+    "in-memory workflows",
+    "workspace JSON import/export",
+    "large-file log scanning"
+  ],
+  "review": {
+    "auditScreen": true,
+    "securityDoc": "SECURITY.md"
+  },
+  "limitations": [
+    "Certificate inspector is a conservative ASN.1 string inspector, not a PKI validator.",
+    "Configuration diff is line-oriented rather than semantic.",
+    "Large-file mode in Log Inspector is line-oriented (250 MiB file limit), skips lines over 1 MiB of UTF-8 text, previews at most 1,000 lines / 4 MiB, and caps filtered exports at 24 MiB; CSV column analysis is limited to normal mode.",
+    "Workspace files may contain sensitive text explicitly added to the workflow. Protect exported files."
+  ]
+}
