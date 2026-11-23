@@ -625,6 +625,8 @@ function safeExport(result) {
   return result;
 }
 export function renderCookies(app) {
+  // Keep this tool instance's controls isolated when several tools are mounted.
+  const $ = (selector, root = app) => root.querySelector(selector);
   app.innerHTML = `
     <div class="tool-window" id="cookieWindow">
     <div class="tool-window-header" id="cookieDragHandle" title="Drag tool">

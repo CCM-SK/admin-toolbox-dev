@@ -86,6 +86,8 @@ const RULES = [
     }),
   );
   export function renderPowershell(app) {
+  // Keep this tool instance's controls isolated when several tools are mounted.
+  const $ = (selector, root = app) => root.querySelector(selector);
     app.innerHTML = `
       <section class="card">
     <h2>PowerShell analyzer</h2>

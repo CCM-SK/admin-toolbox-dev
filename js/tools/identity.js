@@ -120,6 +120,8 @@ const BUILTIN_RIDS = new Map([
   [582, 'Storage Replica Administrators']
 ]);
 export function renderIdentity(app) {
+  // Keep this tool instance's controls isolated when several tools are mounted.
+  const $ = (selector, root = app) => root.querySelector(selector);
   app.innerHTML = `
     <section class="card">
       <h2>SID / GUID / identity decoder</h2>

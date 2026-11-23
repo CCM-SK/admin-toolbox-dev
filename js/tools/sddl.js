@@ -656,6 +656,8 @@ function safeExport(result) {
   };
 }
 export function renderSddl(app) {
+  // Keep this tool instance's controls isolated when several tools are mounted.
+  const $ = (selector, root = app) => root.querySelector(selector);
   app.innerHTML = `
     <div class="tool-window" id="sddlWindow">
     <div class="tool-window-header" id="sddlDragHandle" title="Drag tool">

@@ -5,7 +5,9 @@ export const metadata = {
   description: 'Analyze message headers locally', 
   path: '/#header' 
 }; 
-export function renderHeader(app) { 
+export function renderHeader(app) {
+  // Keep this tool instance's controls isolated when several tools are mounted.
+  const $ = (selector, root = app) => root.querySelector(selector); 
   app.innerHTML = ` 
     <div class="tool-window" id="mailHeaderWindow"> 
       <div class="tool-window-header" id="mailHeaderDragHandle" title="Drag tool"> 

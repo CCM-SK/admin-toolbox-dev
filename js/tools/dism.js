@@ -6,6 +6,8 @@ export const metadata = {
   path: '/#dism'
 };
 export function renderDism(app) {
+  // Keep this tool instance's controls isolated when several tools are mounted.
+  const $ = (selector, root = app) => root.querySelector(selector);
     app.innerHTML = `
     <div class="tool-window" id="dismWindow">
         <div class="tool-window-header" id="dismDragHandle" title="Drag tool">

@@ -18,6 +18,8 @@ const LIMITS = {
   maxCompoundFileBytes: 128 * 1024 * 1024
 };
 export function renderHeaderRework(app) {
+  // Keep this tool instance's controls isolated when several tools are mounted.
+  const $ = (selector, root = app) => root.querySelector(selector);
   app.innerHTML = `
     <div class="tool-window" id="mailHeaderWindow">
       <div class="tool-window-header" id="mailHeaderDragHandle" title="Drag tool">
@@ -139,7 +141,7 @@ export function renderHeaderRework(app) {
     }
     try {
       const headers = parseHeaders(raw);
-      const analysis = analyzeHeaders(headers, readSuppliedEvidence());
+      const analysis = analyzeHeaders(headers, readSuppliedEvidence(app));
       result.hidden = false;
       result.innerHTML = renderResult(analysis, raw);
       bindExports(analysis);
@@ -149,15 +151,15 @@ export function renderHeaderRework(app) {
     }
   }
 }
-function readSuppliedEvidence() {
-  const mode = document.querySelector('#mailHeaderAnalysisMode')?.value || 'headers';
+function readSuppliedEvidence(root) {
+  const mode = root.querySelector('#mailHeaderAnalysisMode')?.value || 'headers';
   if (mode !== 'supplied-dns') return { mode, dns: {} };
   return {
     mode,
     dns: {
-      spf: document.querySelector('#mailHeaderSpfRecord')?.value.trim() || '',
-      dmarc: document.querySelector('#mailHeaderDmarcRecord')?.value.trim() || '',
-      dkimKey: document.querySelector('#mailHeaderDkimKeyRecord')?.value.trim() || ''
+      spf: root.querySelector('#mailHeaderSpfRecord')?.value.trim() || '',
+      dmarc: root.querySelector('#mailHeaderDmarcRecord')?.value.trim() || '',
+      dkimKey: root.querySelector('#mailHeaderDkimKeyRecord')?.value.trim() || ''
     }
   };
 }

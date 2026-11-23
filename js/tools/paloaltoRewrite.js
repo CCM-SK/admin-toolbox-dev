@@ -6,6 +6,8 @@ export const metadata = {
   path: '/#paloalto'
 };
 export function renderPaloAlto(app) {
+  // Keep this tool instance's controls isolated when several tools are mounted.
+  const $ = (selector, root = app) => root.querySelector(selector);
   app.innerHTML = `
     <div class="tool-window" id="paloAltoWindow">
       <div class="tool-window-header" id="paloAltoDragHandle" title="Drag tool">

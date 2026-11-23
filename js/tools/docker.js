@@ -6,6 +6,8 @@ export const metadata = {
     path: '/#docker-kubernetes'
 };
 export function renderDockerKubernetes(app) {
+  // Keep this tool instance's controls isolated when several tools are mounted.
+  const $ = (selector, root = app) => root.querySelector(selector);
   app.innerHTML = `
     <div class="tool-window" id="dockerKubernetesWindow">
   <div class="tool-window-header" id="dockerKubernetesDragHandle" title="Drag tool">

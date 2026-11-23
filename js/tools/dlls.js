@@ -1,4 +1,3 @@
-const $ = s => document.querySelector(s);
 const esc = v => String(v ?? '')
   .replace(/&/g,'&amp;').replace(/</g,'&lt;')
   .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
@@ -317,6 +316,7 @@ function renderData(file,pe,h,strings,findings,yara){
   </div>`;
 }
 export function renderDllAnalyzer(app){
+  const $ = selector => app.querySelector(selector);
   app.innerHTML=`
   <section class="card">
     <div class="row between">

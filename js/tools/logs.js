@@ -12,6 +12,8 @@ const LARGE_PREVIEW_LIMIT = 1000;
 const EXAMPLE_LOG = `2026-10-12T08:15:23Z INFO host=web01 user=alice request=/health status=200\n2026-10-12T08:16:02Z WARN host=web01 user=alice request=/login status=401\n2026-10-12T08:17:11Z ERROR host=db01 process=sqlservr.exe message="connection timeout"`;
 
 export function renderLogs(app) {
+  // Keep this tool instance's controls isolated when several tools are mounted.
+  const $ = (selector, root = app) => root.querySelector(selector);
   app.innerHTML = `
     <section class="card">
       <h2>Log / CSV inspector</h2>
@@ -61,7 +63,7 @@ export function renderLogs(app) {
   let activeRequest = null;
   let searchTimer = null;
   const onToolDeactivate = event => {
-    if (event.detail?.toolId !== 'logs') return;
+    if (event.detail?.toolId !== 'logs' || (event.detail?.scope && event.detail.scope !== app)) return;
     if (worker) worker.terminate();
     worker = null;
     activeRequest = null;

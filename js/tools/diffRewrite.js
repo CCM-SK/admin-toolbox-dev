@@ -250,6 +250,8 @@ function render(a, b, opts) {
   return parts.join('');
 }
 export function renderDiff(app) {
+  // Keep this tool instance's controls isolated when several tools are mounted.
+  const $ = (selector, root = app) => root.querySelector(selector);
   app.innerHTML = `
     <div class="tool-window" id="diffWindow">
     <div class="tool-window-header" id="diffDragHandle" title="Drag tool">

@@ -544,6 +544,8 @@ function renderSummary(events, displayTz) {
   `;
 }
 export function renderTimeline(app) {
+  // Keep this tool instance's controls isolated when several tools are mounted.
+  const $ = (selector, root = app) => root.querySelector(selector);
   const zones = getIanaZones();
   app.innerHTML = `
     <div class="tool-window" id="timelineWindow">

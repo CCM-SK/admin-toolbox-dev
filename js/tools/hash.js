@@ -1,5 +1,7 @@
 import { $, escapeHtml, formatBytes, hex, dropBinder } from '../utils.js';
 export function renderHash(app) {
+  // Keep this tool instance's controls isolated when several tools are mounted.
+  const $ = (selector, root = app) => root.querySelector(selector);
   app.innerHTML = `
     <section class="card">
       <h2>File hashing</h2>

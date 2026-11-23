@@ -1,4 +1,13 @@
-export const $ = (selector, root = document) =>
+let activeToolScope = null;
+
+// Tool modules historically query their controls by ID through this helper.
+// In Work Canvas, multiple tools can be mounted at once, so prefer the panel
+// most recently interacted with to keep otherwise-identical IDs isolated.
+export function setActiveToolScope(root) {
+    activeToolScope = root && typeof root.querySelector === 'function' ? root : null;
+}
+
+export const $ = (selector, root = activeToolScope || document) =>
     root.querySelector(selector);
 
 export const $$ = (selector, root = document) =>
