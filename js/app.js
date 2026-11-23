@@ -1,7 +1,7 @@
 import { TOOL_REGISTRY, TOOL_BY_ID } from './registry.js';
 import { addWorkflowArtifact, clearWorkflow, getWorkflowArtifact, listWorkflowArtifacts, removeWorkflowArtifact, replaceWorkflowArtifacts } from './workflow.js';
 import { downloadText, enableToolDragging, escapeHtml, formatBytes, setActiveToolScope } from './utils.js';
-import { createCanvasLayoutExport, displaySpaceName, parseCanvasLayoutExport, sortToolsBySpaceThenName } from './canvas-layout.js';
+import { createCanvasLayoutExport, displaySpaceName, parseCanvasLayoutExport, resolveCanvasPanelDimensions, sortToolsBySpaceThenName } from './canvas-layout.js';
 
 const app = document.querySelector('#app');
 const navRoot = document.querySelector('#toolNavigation');
@@ -526,13 +526,13 @@ async function addToolToCanvas(id, layout = null) {
   const requestedLeft = layout?.left ?? (24 + (index % columns) * (panelWidth + 20));
   const left = Math.max(0, Math.min(Math.max(0, boardWidth - 72), requestedLeft));
   const top = Math.max(0, Math.min(50000, layout?.top ?? (24 + Math.floor(index / columns) * 42)));
-  const availableWidth = Math.max(340, boardWidth - left - 12);
-  const requestedWidth = layout?.width || panelWidth;
-  const requestedHeight = layout?.height || 520;
+  const dimensions = resolveCanvasPanelDimensions(layout, { width: panelWidth, height: 520 });
   panel.style.left = `${left}px`;
   panel.style.top = `${top}px`;
-  panel.style.width = `${Math.max(340, Math.min(availableWidth, requestedWidth))}px`;
-  panel.style.height = `${Math.max(280, Math.min(12000, requestedHeight))}px`;
+  // Do not clamp imported widths to the current viewport. Canvas can scroll,
+  // and the original window size must survive imports across monitor sizes.
+  panel.style.width = `${dimensions.width}px`;
+  panel.style.height = `${dimensions.height}px`;
   canvasBoard.append(panel);
   const root = panel.querySelector('.canvas-panel-tool');
   const main = panel.querySelector('.canvas-panel-main');

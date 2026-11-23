@@ -15,6 +15,10 @@ test('Work Canvas has a header entry point, tool picker and independent panel bo
   assert.match(html, /id="workCanvasBoard"/);
   assert.match(html, /id="openInCanvas"/);
   assert.match(app, /async function addToolToCanvas\(id, layout = null\)/);
+  assert.match(app, /resolveCanvasPanelDimensions\(layout, \{ width: panelWidth, height: 520 \}\)/);
+  assert.match(app, /panel\.style\.width = `\$\{dimensions\.width\}px`/);
+  assert.match(app, /panel\.style\.height = `\$\{dimensions\.height\}px`/);
+  assert.doesNotMatch(app, /Math\.min\(availableWidth, requestedWidth\)/);
   assert.match(app, /const MAX_CANVAS_PANELS = 16/);
   assert.match(app, /canvasPanels\.get\(tool\.id\)/);
 });

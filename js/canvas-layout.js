@@ -10,6 +10,20 @@ export function displaySpaceName(value) {
   return String(value || '').replace(/\b([a-z])/g, character => character.toUpperCase());
 }
 
+// Preserve imported panel dimensions independently of the current viewport.
+// A Canvas created on a large monitor should retain its intended window sizes
+// when opened later; overflow is handled by the scrollable Canvas board.
+export function resolveCanvasPanelDimensions(layout, defaults) {
+  const dimension = (value, fallback, minimum) => {
+    if (typeof value !== 'number' || !Number.isFinite(value)) return fallback;
+    return Math.max(minimum, Math.min(12000, value));
+  };
+  return {
+    width: dimension(layout?.width, defaults.width, 340),
+    height: dimension(layout?.height, defaults.height, 280)
+  };
+}
+
 export function createCanvasLayoutExport(panels, exportedAt = new Date().toISOString()) {
   const cleanPanels = panels.map(panel => ({
     id: panel.id,

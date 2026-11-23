@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createCanvasLayoutExport, displaySpaceName, parseCanvasLayoutExport, sortToolsBySpaceThenName } from '../js/canvas-layout.js';
+import { createCanvasLayoutExport, displaySpaceName, parseCanvasLayoutExport, resolveCanvasPanelDimensions, sortToolsBySpaceThenName } from '../js/canvas-layout.js';
 
 const tools = [
   { id: 'z', category: 'Security & identity', name: 'Zulu' },
@@ -24,6 +24,8 @@ test('Canvas export contains panel selections and geometry only', () => {
   assert.equal(layout.format, 'admin-toolbox-canvas');
   assert.deepEqual(layout.panels.map(panel => panel.id), ['a', 'b']);
   assert.equal(layout.panels[1].left, 420);
+  assert.equal(layout.panels[1].width, 720);
+  assert.equal(layout.panels[1].height, 560);
   assert.equal(layout.panels[0].minimized, true);
   assert.doesNotMatch(JSON.stringify(layout), /sensitive text|secret|workflowText|input/);
 });
@@ -41,4 +43,14 @@ test('Canvas layout import validates known tools, duplicates and geometry', () =
   assert.throws(() => parseCanvasLayoutExport({ ...base, panels: [{ ...base.panels[0], id: 'unknown' }] }, known), /unknown/);
   assert.throws(() => parseCanvasLayoutExport({ ...base, panels: [{ ...base.panels[0], left: -1 }] }, known), /left/);
   assert.throws(() => parseCanvasLayoutExport({ ...base, panels: Array(17).fill(base.panels[0]) }, known), /between 1 and 16/);
+});
+
+
+test('Canvas import preserves window dimensions independently of the current viewport', () => {
+  const imported = resolveCanvasPanelDimensions({ width: 1680, height: 940 }, { width: 640, height: 520 });
+  assert.deepEqual(imported, { width: 1680, height: 940 });
+
+  // Missing or malformed dimensions fall back safely; values remain bounded.
+  assert.deepEqual(resolveCanvasPanelDimensions({ width: 'invalid', height: null }, { width: 640, height: 520 }), { width: 640, height: 520 });
+  assert.deepEqual(resolveCanvasPanelDimensions({ width: 20000, height: 100 }, { width: 640, height: 520 }), { width: 12000, height: 280 });
 });

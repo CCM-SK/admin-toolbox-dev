@@ -50,7 +50,7 @@ export function renderAudit(app) {
   `;
   const manifest = {
     application: 'Admin Toolbox',
-    version: '0.1.7.6-beta',
+    version: '0.1.8.0-beta',
     architecture: 'GitHub Pages -> static HTML/CSS/ES modules -> browser -> local processing -> result/download',
     loading: { toolModules: 'on-demand same-origin dynamic imports', buildStepRequired: false },
     network: { connectSrc: "'none'", externalRequests: false, thirdPartyRuntimeRequests: false },
