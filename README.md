@@ -8,8 +8,8 @@ A static, browser-based toolbox for IT administrators. The application uses plai
 - Files and pasted text are processed in the browser. The application does not intentionally send this input to a server or external service.
 - There is no application backend, analytics, cookie-based state, `localStorage`, `sessionStorage` or IndexedDB.
 - Favorites, recently used tools and workflow artifacts exist in memory for the current tab only.
-- Use **Work Canvas** to open up to 16 tools at once in independent panels. Move panels by their title bars, resize them from the lower-right corner, and minimize, maximize or close them individually. The layout is browser-only and works on GitHub Pages.
-- In the single-tool view, use **Open in Work Canvas** to add the current tool. In Canvas mode, choose tools from the Add tool selector. A tool can appear only once in a Canvas at a time; selecting it again focuses its existing panel.
+- Use **Work Canvas** to open up to 16 tools at once in independent panels. Move panels by their title bars, resize them from the lower-right corner, and minimize, maximize or close them individually. The layout is browser-only and works on GitHub Pages. The sidebar collapses automatically on entry to give the Canvas more room; use **Show tools** in the top bar to bring it back temporarily.
+- In the single-tool view, use **Open in Work Canvas** to add the current tool. In Canvas mode, choose tools from the Add tool selector, grouped by space/category and sorted alphabetically by tool name. A tool can appear only once in a Canvas at a time; selecting it again focuses its existing panel.
 - Detach the sidebar to move the sidebar itself; re-dock it to return to the standard layout.
 - Open workflow artifacts and workspace import/export from the Workspace button in the top header.
 - Workspace export is user-initiated and creates a local JSON download. Workspace files may contain sensitive text that was explicitly added to the workflow.
@@ -43,7 +43,8 @@ All module and worker URLs are relative to their source files, so the app can ru
 - Mark tools as favorites with the star beside each tool. Favorites and the recent list are session-only.
 - Tools with sample inputs show **Load example** in the tool action bar. Samples are illustrative; inspect them before using the output operationally.
 - Add supported text inputs or generated reports to the in-memory workflow, then open each artifact in a compatible tool. Workflow contents remain in memory until the tab is closed or they are cleared.
-- Export a workspace to preserve favorites, recent tools, the selected tool, theme, Work Canvas panel layout and workflow artifacts. Import the JSON workspace to restore them. Panel input fields are not exported automatically; add supported text to the workflow first when it needs to be included. Treat workspace files as sensitive.
+- **Export Canvas** saves only the selected tools and their panel positions, sizes, stacking order and window state. **Import Canvas** restores that layout without importing tool inputs or workflow data.
+- Export a full **Workspace** to preserve favorites, recent tools, the selected tool, theme, Work Canvas panel layout and workflow artifacts. Import the JSON workspace to restore them. Panel input fields are not exported automatically; add supported text to the workflow first when it needs to be included. Treat full workspace files as sensitive.
 
 ## Development checks
 
@@ -66,5 +67,5 @@ The syntax check deliberately excludes the unused `js/tools/citrixadcRewrite.js`
 - Certificate inspection decodes selected ASN.1 strings from PEM/DER input; it does not validate certificate chains, signatures, trust, revocation or OCSP/CRL status.
 - Large-file log mode is line-oriented and does not perform CSV column analysis.
 - Workflow integration is available for tools that declare input adapters, plus generated redacted-secret and timeline reports. It is not a general-purpose arbitrary binary pipeline.
-- Work Canvas allows up to 16 simultaneous tool panels to limit browser resource use. Only one instance of each tool can be open at a time. On narrow screens, panels stack vertically rather than behaving as free-floating windows.
+- Work Canvas allows up to 16 simultaneous tool panels to limit browser resource use. Only one instance of each tool can be open at a time. On narrow screens, panels stack vertically rather than behaving as free-floating windows. Canvas layout export/import stores panel metadata and geometry only; it does not include text typed into any tool.
 - Workspace JSON may contain log lines, configurations or other sensitive text. Store and share it securely.

@@ -1,6 +1,7 @@
 import { TOOL_REGISTRY, TOOL_BY_ID } from './registry.js';
 import { addWorkflowArtifact, clearWorkflow, getWorkflowArtifact, listWorkflowArtifacts, removeWorkflowArtifact, replaceWorkflowArtifacts } from './workflow.js';
 import { downloadText, enableToolDragging, escapeHtml, formatBytes, setActiveToolScope } from './utils.js';
+import { createCanvasLayoutExport, displaySpaceName, parseCanvasLayoutExport, sortToolsBySpaceThenName } from './canvas-layout.js';
 
 const app = document.querySelector('#app');
 const navRoot = document.querySelector('#toolNavigation');
@@ -18,6 +19,7 @@ let recentTools = [];
 let currentToolId = 'dashboard';
 let activationVersion = 0;
 let canvasMode = false;
+let sidebarCollapsedBeforeCanvas = false;
 let canvasZIndex = 20;
 const canvasPanels = new Map();
 const MAX_WORKSPACE_FILE_BYTES = 64 * 1024 * 1024;
@@ -179,8 +181,33 @@ function initializeToolDragging(tool) {
   );
 }
 
+function setSidebarCollapsed(collapsed) {
+  const next = Boolean(collapsed);
+  document.body.classList.toggle('sidebar-collapsed', next);
+  const toggle = document.querySelector('#sidebarToggle');
+  toggle?.setAttribute('aria-expanded', String(!next));
+  toggle?.setAttribute('aria-label', next ? 'Expand tool sidebar' : 'Collapse tool sidebar');
+  if (toggle) {
+    toggle.title = next ? 'Expand tool sidebar' : 'Collapse tool sidebar';
+    const label = toggle.querySelector('.button-label');
+    if (label) label.textContent = next ? 'Show tools' : 'Hide tools';
+  }
+  if (canvasMode) requestAnimationFrame(updateCanvasBoardExtent);
+}
+
+document.querySelector('#sidebarToggle').addEventListener('click', () => {
+  setSidebarCollapsed(!document.body.classList.contains('sidebar-collapsed'));
+});
+
 function setCanvasMode(enabled, { seedCurrentTool = false } = {}) {
-  canvasMode = Boolean(enabled);
+  const nextMode = Boolean(enabled);
+  if (nextMode && !canvasMode) {
+    sidebarCollapsedBeforeCanvas = document.body.classList.contains('sidebar-collapsed');
+    setSidebarCollapsed(true);
+  } else if (!nextMode && canvasMode) {
+    setSidebarCollapsed(sidebarCollapsedBeforeCanvas);
+  }
+  canvasMode = nextMode;
   document.body.classList.toggle('work-canvas-active', canvasMode);
   workCanvasView.hidden = !canvasMode;
   app.hidden = canvasMode;
@@ -496,12 +523,16 @@ async function addToolToCanvas(id, layout = null) {
   const boardWidth = canvasBoard.clientWidth || window.innerWidth - 80;
   const panelWidth = Math.min(680, Math.max(340, boardWidth - 36));
   const columns = boardWidth >= panelWidth * 2 + 72 ? 2 : 1;
-  const left = layout?.left ?? (24 + (index % columns) * (panelWidth + 20));
-  const top = layout?.top ?? (24 + Math.floor(index / columns) * 42);
-  panel.style.left = `${Math.max(0, left)}px`;
-  panel.style.top = `${Math.max(0, top)}px`;
-  panel.style.width = `${Math.min(panelWidth, layout?.width || panelWidth)}px`;
-  panel.style.height = `${Math.max(280, Math.min(900, layout?.height || 520))}px`;
+  const requestedLeft = layout?.left ?? (24 + (index % columns) * (panelWidth + 20));
+  const left = Math.max(0, Math.min(Math.max(0, boardWidth - 72), requestedLeft));
+  const top = Math.max(0, Math.min(50000, layout?.top ?? (24 + Math.floor(index / columns) * 42)));
+  const availableWidth = Math.max(340, boardWidth - left - 12);
+  const requestedWidth = layout?.width || panelWidth;
+  const requestedHeight = layout?.height || 520;
+  panel.style.left = `${left}px`;
+  panel.style.top = `${top}px`;
+  panel.style.width = `${Math.max(340, Math.min(availableWidth, requestedWidth))}px`;
+  panel.style.height = `${Math.max(280, Math.min(12000, requestedHeight))}px`;
   canvasBoard.append(panel);
   const root = panel.querySelector('.canvas-panel-tool');
   const main = panel.querySelector('.canvas-panel-main');
@@ -552,9 +583,15 @@ document.querySelector('#workCanvasToggle').addEventListener('click', () => {
 document.querySelector('#canvasAddTool').addEventListener('click', () => {
   if (canvasToolPicker.value) void addToolToCanvas(canvasToolPicker.value);
 });
-canvasToolPicker.innerHTML = TOOL_REGISTRY.filter(tool => tool.id !== 'dashboard').map(tool =>
-  `<option value="${escapeHtml(tool.id)}">${escapeHtml(tool.name)} · ${escapeHtml(tool.category)}</option>`
-).join('');
+const canvasPickerTools = sortToolsBySpaceThenName(TOOL_REGISTRY.filter(tool => tool.id !== 'dashboard'));
+const canvasPickerSpaces = [...new Set(canvasPickerTools.map(tool => tool.category))]
+  .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base', numeric: true }));
+canvasToolPicker.innerHTML = canvasPickerSpaces.map(space => {
+  const options = canvasPickerTools.filter(tool => tool.category === space).map(tool =>
+    `<option value="${escapeHtml(tool.id)}">${escapeHtml(tool.name)}</option>`
+  ).join('');
+  return `<optgroup label="${escapeHtml(displaySpaceName(space))}">${options}</optgroup>`;
+}).join('');
 window.addEventListener('resize', updateCanvasBoardExtent);
 
 async function activate(id, updateHistory = true, recordRecent = true) {
@@ -690,6 +727,47 @@ async function openArtifactInTool(item, targetId) {
   }
 }
 
+function getCanvasPanelLayouts() {
+  return [...canvasPanels.entries()].map(([id, entry]) => {
+    const { panel, tool } = entry;
+    const maximized = panel.classList.contains('is-maximized');
+    let left = Number.parseFloat(panel.style.left) || 0;
+    let top = Number.parseFloat(panel.style.top) || 0;
+    let width = Number.parseFloat(panel.style.width) || panel.offsetWidth || 640;
+    let height = panel.classList.contains('is-minimized')
+      ? Number.parseFloat(panel.dataset.expandedHeight) || 520
+      : Number.parseFloat(panel.style.height) || panel.offsetHeight || 520;
+    let minimized = panel.classList.contains('is-minimized');
+
+    // A maximized panel's visible rectangle is the viewport, not its saved
+    // desktop placement. Export its restore rectangle so another screen can
+    // recreate the arrangement faithfully.
+    if (maximized) {
+      try {
+        const previous = JSON.parse(panel.dataset.previousRect || '{}');
+        left = Number.parseFloat(previous.left) || left;
+        top = Number.parseFloat(previous.top) || top;
+        width = Number.parseFloat(previous.width) || width;
+        height = Number.parseFloat(previous.height) || height;
+        minimized = previous.minimized === 'true';
+      } catch { /* keep the visible rectangle as a safe fallback */ }
+    }
+
+    return {
+      id,
+      name: tool.name,
+      category: tool.category,
+      left,
+      top,
+      width,
+      height,
+      minimized,
+      maximized,
+      zIndex: Number.parseInt(panel.style.zIndex, 10) || 0
+    };
+  });
+}
+
 function makeWorkspace() {
   return {
     application: 'Admin Toolbox',
@@ -700,17 +778,7 @@ function makeWorkspace() {
     theme: document.documentElement.dataset.theme === 'modern' ? 'modern' : 'classic',
     favorites: [...favorites],
     recentTools,
-    canvas: [...canvasPanels.entries()].map(([id, entry]) => ({
-      id,
-      left: Number.parseFloat(entry.panel.style.left) || 0,
-      top: Number.parseFloat(entry.panel.style.top) || 0,
-      width: Number.parseFloat(entry.panel.style.width) || entry.panel.offsetWidth,
-      height: entry.panel.classList.contains('is-minimized')
-        ? (Number.parseFloat(entry.panel.dataset.expandedHeight) || 520)
-        : (Number.parseFloat(entry.panel.style.height) || entry.panel.offsetHeight),
-      minimized: entry.panel.classList.contains('is-minimized'),
-      maximized: entry.panel.classList.contains('is-maximized')
-    })),
+    canvas: getCanvasPanelLayouts(),
     artifacts: listWorkflowArtifacts().map(({ name, source, contentType, content, addedAt }) => ({ name, source, contentType, content, addedAt }))
   };
 }
@@ -724,6 +792,44 @@ document.querySelector('#exportWorkspace').addEventListener('click', () => {
     status.textContent = 'Workspace exported. Keep the file secure; it may contain sensitive log or configuration text.';
   } catch (error) { status.textContent = error.message || 'Unable to export workspace.'; }
 });
+document.querySelector('#exportCanvas').addEventListener('click', () => {
+  const status = document.querySelector('#canvasLayoutStatus');
+  try {
+    if (!canvasPanels.size) throw new Error('Add at least one tool before exporting the Canvas.');
+    const canvasFile = createCanvasLayoutExport(getCanvasPanelLayouts());
+    const json = JSON.stringify(canvasFile, null, 2);
+    downloadText('admin-toolbox-canvas.json', json, 'application/json;charset=utf-8');
+    status.textContent = 'Canvas layout exported. Only tool selections and panel positions/sizes were included.';
+  } catch (error) {
+    status.textContent = error.message || 'Unable to export Canvas.';
+  }
+});
+
+document.querySelector('#importCanvas').addEventListener('click', () => document.querySelector('#canvasLayoutFile').click());
+document.querySelector('#canvasLayoutFile').addEventListener('change', async event => {
+  const file = event.target.files?.[0];
+  event.target.value = '';
+  if (!file) return;
+  const status = document.querySelector('#canvasLayoutStatus');
+  try {
+    if (file.size > 256 * 1024) throw new Error('Canvas layout file exceeds the 256 KiB import limit.');
+    const canvasToolIds = new Set(TOOL_REGISTRY.filter(tool => tool.id !== 'dashboard').map(tool => tool.id));
+    const parsed = parseCanvasLayoutExport(JSON.parse(await file.text()), canvasToolIds, MAX_CANVAS_PANELS);
+    for (const entry of canvasPanels.values()) {
+      document.dispatchEvent(new CustomEvent('toolbox:tool-deactivate', { detail: { toolId: entry.tool.id, scope: entry.root } }));
+    }
+    canvasPanels.clear();
+    canvasBoard.replaceChildren();
+    canvasBoard.style.minHeight = '';
+    setCanvasMode(true);
+    document.querySelector('#canvasHint').hidden = true;
+    for (const layout of parsed.panels) await addToolToCanvas(layout.id, layout);
+    status.textContent = `Canvas imported from ${file.name}. Tool inputs were not imported.`;
+  } catch (error) {
+    status.textContent = error.message || 'Unable to import Canvas.';
+  }
+});
+
 document.querySelector('#importWorkspace').addEventListener('click', () => document.querySelector('#workspaceFile').click());
 document.querySelector('#workspaceFile').addEventListener('change', async event => {
   const file = event.target.files?.[0];

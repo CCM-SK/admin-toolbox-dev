@@ -22,6 +22,10 @@
 
     <div class="topbar-actions">
       <div class="privacy-badge" id="privacyBadge" title="Application data stays in the browser">LOCAL ONLY</div>
+      <button class="icon-button" id="sidebarToggle" type="button" aria-controls="sidebar" aria-label="Collapse tool sidebar" aria-expanded="true" title="Collapse tool sidebar">
+        <span aria-hidden="true">☰</span>
+        <span class="button-label">Hide tools</span>
+      </button>
       <button class="icon-button" id="workCanvasToggle" type="button" aria-pressed="false" title="Open Work Canvas">
         <span aria-hidden="true">▦</span>
         <span class="button-label">Work Canvas</span>
@@ -94,10 +98,18 @@
             <h2>Work Canvas</h2>
             <p class="small">Open multiple tools at once. Move, resize, minimize or maximize each panel independently. Everything stays in this browser tab.</p>
           </div>
-          <div class="canvas-add-controls">
-            <label class="visually-hidden" for="canvasToolPicker">Choose a tool to add</label>
-            <select id="canvasToolPicker" aria-label="Choose a tool to add"></select>
-            <button class="btn primary" id="canvasAddTool" type="button">＋ Add tool</button>
+          <div class="canvas-toolbar-actions">
+            <div class="canvas-add-controls">
+              <label class="visually-hidden" for="canvasToolPicker">Choose a tool to add</label>
+              <select id="canvasToolPicker" aria-label="Choose a tool to add"></select>
+              <button class="btn primary" id="canvasAddTool" type="button">＋ Add tool</button>
+            </div>
+            <div class="canvas-layout-actions">
+              <button class="btn" id="exportCanvas" type="button">Export Canvas</button>
+              <button class="btn" id="importCanvas" type="button">Import Canvas</button>
+              <input id="canvasLayoutFile" type="file" accept="application/json,.json" hidden>
+            </div>
+            <span class="small" id="canvasLayoutStatus" role="status" aria-live="polite"></span>
           </div>
         </div>
         <div class="canvas-hint small" id="canvasHint">Add a tool to get started. You can open several different tools and work in them side by side.</div>

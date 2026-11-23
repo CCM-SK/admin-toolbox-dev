@@ -2239,3 +2239,36 @@ body.work-canvas-active.sidebar-detached .layout {
   .canvas-add-controls select { flex: 1; min-width: 0; max-width: none; }
   .canvas-panel { height: 480px; }
 }
+
+
+/* Collapsible tool sidebar. Canvas enters with the sidebar tucked away. */
+body.sidebar-collapsed .layout,
+body.work-canvas-active.sidebar-collapsed .layout {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+body.sidebar-collapsed .sidebar {
+  display: none !important;
+}
+.canvas-toolbar-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 7px;
+  min-width: 0;
+}
+.canvas-layout-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+#canvasLayoutStatus {
+  max-width: min(520px, 100%);
+  text-align: right;
+}
+@media (max-width: 900px) {
+  .canvas-toolbar-actions { width: 100%; align-items: stretch; }
+  .canvas-layout-actions { justify-content: flex-start; }
+  #canvasLayoutStatus { text-align: left; }
+}

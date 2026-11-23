@@ -54,7 +54,7 @@ test('tool selectors are scoped to the canvas panel in use', async () => {
 test('Canvas layout is included in workspace export/import but tool inputs are not implicitly exported', async () => {
   const app = await read('js/app.js');
   const readme = await read('README.md');
-  assert.match(app, /canvas: \[\.\.\.canvasPanels\.entries\(\)\]/);
+  assert.match(app, /canvas: getCanvasPanelLayouts\(\)/);
   assert.match(app, /workspace\.canvas !== undefined/);
   assert.match(app, /await addToolToCanvas\(layout\.id, layout\)/);
   assert.match(readme, /Work Canvas panel layout/);
@@ -66,4 +66,29 @@ test('closing a Canvas tool only deactivates the matching tool instance', async 
   const logs = await read('js/tools/logs.js');
   assert.match(app, /toolId: tool\.id, scope: root/);
   assert.match(logs, /event\.detail\?\.scope && event\.detail\.scope !== app/);
+});
+
+
+test('Canvas sidebar collapses automatically and can be toggled back', async () => {
+  const html = await read('index.html');
+  const app = await read('js/app.js');
+  const css = await read('css/app.css');
+  assert.match(html, /id="sidebarToggle"/);
+  assert.match(app, /function setSidebarCollapsed\(collapsed\)/);
+  assert.match(app, /sidebarCollapsedBeforeCanvas = document\.body\.classList\.contains\('sidebar-collapsed'\)/);
+  assert.match(app, /setSidebarCollapsed\(true\)/);
+  assert.match(app, /setSidebarCollapsed\(sidebarCollapsedBeforeCanvas\)/);
+  assert.match(css, /body\.sidebar-collapsed \.sidebar\s*\{\s*display: none !important/);
+});
+
+test('Canvas controls expose a dedicated layout export and import without tool inputs', async () => {
+  const html = await read('index.html');
+  const app = await read('js/app.js');
+  const layout = await read('js/canvas-layout.js');
+  assert.match(html, /id="exportCanvas"[^>]*>Export Canvas/);
+  assert.match(html, /id="importCanvas"[^>]*>Import Canvas/);
+  assert.match(app, /createCanvasLayoutExport\(getCanvasPanelLayouts\(\)\)/);
+  assert.match(app, /parseCanvasLayoutExport\(JSON\.parse\(await file\.text\(\)\)/);
+  assert.match(layout, /format: 'admin-toolbox-canvas'/);
+  assert.doesNotMatch(layout, /artifacts|inputValue|workflowText/i);
 });
