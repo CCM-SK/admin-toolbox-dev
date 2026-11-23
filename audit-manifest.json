@@ -289,7 +289,8 @@
     "sample inputs",
     "in-memory workflows",
     "workspace JSON import/export",
-    "large-file log scanning"
+    "large-file log scanning",
+    "draggable tool windows when sidebar is detached"
   ],
   "review": {
     "auditScreen": true,

@@ -19,7 +19,7 @@ const manifest = {
   fileInput: { userSelection: true, dragAndDrop: true },
   exports: { userInitiatedOnly: true, workspaceIncludesWorkflowText: true },
   tools: TOOL_REGISTRY.filter(tool => tool.id !== 'dashboard').map(({ id, name, category, description }) => ({ id, name, category, description })),
-  features: ['global tool search', 'session favorites and recents', 'sample inputs', 'in-memory workflows', 'workspace JSON import/export', 'large-file log scanning'],
+  features: ['global tool search', 'session favorites and recents', 'sample inputs', 'in-memory workflows', 'workspace JSON import/export', 'large-file log scanning', 'draggable tool windows when sidebar is detached'],
   review: { auditScreen: true, securityDoc: 'SECURITY.md' },
   limitations: [
     'Certificate inspector is a conservative ASN.1 string inspector, not a PKI validator.',

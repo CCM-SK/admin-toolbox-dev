@@ -702,6 +702,14 @@ body.sidebar-detached .tool-window-header.dragging {
 .tool-window-header.dragging {
   cursor: grabbing;
 }
+.tool-window-header--generated {
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+}
+.tool-window-header--generated strong {
+  color: var(--text);
+  font-size: 13px;
+}
 .tool-drag-grip {
   opacity: 0.55;
   font-size: 18px;

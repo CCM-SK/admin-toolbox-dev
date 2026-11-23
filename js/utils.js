@@ -250,6 +250,10 @@ export function enableToolDragging(windowEl, handleEl, isEnabled = () => true) {
   if (!windowEl || !handleEl) {
     throw new Error('enableToolDragging requires a window element and drag handle.');
   }
+  // Tool modules and the application-level fallback may both request setup.
+  // Install exactly one pointer-handler set per rendered tool window.
+  if (windowEl.dataset.toolDragReady === 'true') return;
+  windowEl.dataset.toolDragReady = 'true';
 
   let dragging = false;
   let pointerId = null;

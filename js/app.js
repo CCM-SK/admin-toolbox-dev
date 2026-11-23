@@ -1,6 +1,6 @@
 import { TOOL_REGISTRY, TOOL_BY_ID } from './registry.js';
 import { addWorkflowArtifact, clearWorkflow, getWorkflowArtifact, listWorkflowArtifacts, removeWorkflowArtifact, replaceWorkflowArtifacts } from './workflow.js';
-import { downloadText, escapeHtml, formatBytes } from './utils.js';
+import { downloadText, enableToolDragging, escapeHtml, formatBytes } from './utils.js';
 
 const app = document.querySelector('#app');
 const navRoot = document.querySelector('#toolNavigation');
@@ -121,6 +121,49 @@ function showToolMessage(message, kind = '') {
   el.textContent = message;
   el.dataset.kind = kind;
 }
+function initializeToolDragging(tool) {
+  // Most tools render a single .tool-window themselves. Wrap the remaining
+  // tools so every registered tool gets the same draggable title bar.
+  let toolWindow = app.children.length === 1 && app.firstElementChild?.classList.contains('tool-window')
+    ? app.firstElementChild
+    : null;
+
+  if (!toolWindow) {
+    toolWindow = document.createElement('div');
+    toolWindow.className = 'tool-window tool-window--generated';
+    toolWindow.dataset.toolId = tool.id;
+    const content = document.createDocumentFragment();
+    while (app.firstChild) content.append(app.firstChild);
+    toolWindow.append(content);
+    app.append(toolWindow);
+  }
+
+  let dragHandle = toolWindow.querySelector(':scope > .tool-window-header');
+  if (!dragHandle) {
+    dragHandle = document.createElement('div');
+    dragHandle.className = 'tool-window-header tool-window-header--generated';
+    dragHandle.title = 'Detach the sidebar, then drag to move this tool';
+    const grip = document.createElement('span');
+    grip.className = 'tool-drag-grip';
+    grip.setAttribute('aria-hidden', 'true');
+    grip.textContent = '⋮⋮';
+    const title = document.createElement('strong');
+    title.textContent = tool.name;
+    dragHandle.append(grip, title);
+    toolWindow.prepend(dragHandle);
+  } else if (!dragHandle.title) {
+    dragHandle.title = 'Detach the sidebar, then drag to move this tool';
+  }
+
+  // Existing tool modules may already initialize their own drag handle.
+  // enableToolDragging is idempotent, so this safely covers both cases.
+  enableToolDragging(
+    toolWindow,
+    dragHandle,
+    () => document.body.classList.contains('sidebar-detached')
+  );
+}
+
 async function activate(id, updateHistory = true, recordRecent = true) {
   const tool = TOOL_BY_ID.get(id) || TOOL_BY_ID.get('dashboard');
   document.dispatchEvent(new CustomEvent('toolbox:tool-deactivate', { detail: { toolId: currentToolId } }));
@@ -138,6 +181,7 @@ async function activate(id, updateHistory = true, recordRecent = true) {
     const renderer = await tool.load();
     if (version !== activationVersion) return;
     renderer(app);
+    initializeToolDragging(tool);
     app.querySelectorAll('[data-open-tool]').forEach(button => { button.onclick = () => activate(button.dataset.openTool); });
     updateActiveNavigation();
     if (recordRecent && tool.id !== 'dashboard') {
@@ -207,7 +251,6 @@ function renderWorkflowItems() {
 }
 window.addEventListener('toolbox:workflow-changed', renderWorkflowItems);
 
-document.querySelector('#openWorkflow').addEventListener('click', () => workspaceDialog.showModal());
 document.querySelector('#workspaceToggle').addEventListener('click', () => workspaceDialog.showModal());
 document.querySelector('#closeWorkspace').addEventListener('click', () => workspaceDialog.close());
 document.querySelector('#clearWorkflow').addEventListener('click', () => {

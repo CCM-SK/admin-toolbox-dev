@@ -34,6 +34,7 @@ export function renderAudit(app) {
         <li>Cryptographic randomness uses Web Crypto.</li>
         <li>Exports happen only after explicit user action. Workspace export may include user-selected workflow text.</li>
         <li>Tools are loaded on demand with same-origin ES module imports.</li>
+        <li>Every tool page has a draggable title bar when the sidebar is detached; drag the title bar to reposition the active tool.</li>
         <li>Large log files are scanned by a same-origin Web Worker using streaming file reads.</li>
       </ul>
       <h3>Audit manifest</h3>
@@ -63,7 +64,7 @@ export function renderAudit(app) {
     tools: TOOL_REGISTRY.filter(tool => tool.id !== 'dashboard').map(tool => ({
       id: tool.id, name: tool.name, category: tool.category, description: tool.description
     })),
-    features: ['global tool search', 'session favorites and recents', 'sample inputs', 'in-memory workflows', 'workspace JSON import/export', 'large-file log scanning'],
+    features: ['global tool search', 'session favorites and recents', 'sample inputs', 'in-memory workflows', 'workspace JSON import/export', 'large-file log scanning', 'draggable tool windows when sidebar is detached'],
     review: { auditScreen: true, securityDoc: 'SECURITY.md' },
     limitations: [
       'Certificate inspector is a conservative ASN.1 string inspector, not a PKI validator.',

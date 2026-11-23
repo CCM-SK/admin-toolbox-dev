@@ -74,7 +74,7 @@ test('strict CSP is supported by the static templates (no inline style attribute
 
 test('the registry manifest documents the implemented client-side features', async () => {
   const manifest = JSON.parse(await readFile(new URL('../audit-manifest.json', import.meta.url), 'utf8'));
-  for (const feature of ['global tool search', 'session favorites and recents', 'sample inputs', 'in-memory workflows', 'workspace JSON import/export', 'large-file log scanning']) {
+  for (const feature of ['global tool search', 'session favorites and recents', 'sample inputs', 'in-memory workflows', 'workspace JSON import/export', 'large-file log scanning', 'draggable tool windows when sidebar is detached']) {
     assert.ok(manifest.features.includes(feature), `manifest is missing ${feature}`);
   }
   assert.ok(manifest.workers.some(worker => worker.source === 'js/workers/log-worker.js'));
